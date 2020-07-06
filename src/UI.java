@@ -53,6 +53,7 @@ public class UI {
 				displayOrders(email);
 			}
 		}
+		in.close();
 	}
 	
 	private void displayOrders(String email) {
@@ -68,33 +69,30 @@ public class UI {
 			conn = DriverManager.getConnection(url, user, passwd);
 
 			// Step 3: Create a statement
-			stmt = conn.prepareStatement(Select);
+			stmt = conn.prepareStatement("SELECT OC.OrderId, OC.ProductId, P.Name, P.Price, OC.ItemCount "
+					+ "FROM PRODUCT as P, ORDER_CONTAINS as OC, ORDER as O"
+					+ "WHERE O.CEmail=?, OC.OrderId=O.OrderId, OC.ProductId=P.ProductId");
+			stmt.setString(1,  email);
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
 			
 			// Step 5: Display
+			System.out.printf("%-27s %32s %17s %5.2f", "OrderId", "ProductId", "Name", "Price");
+			while (rs.next()) {
+				String orderId = rs.getString("OC.OrderId");
+				String productId = rs.getString("OC.ProductId");
+				String name = rs.getString("P.Name");
+				float price = rs.getFloat("P.Price") * rs.getFloat("OC.ItemCount");
+				System.out.printf("%-27s %32s %17s %5.2f", orderId, productId, name, price);
+			}
 		}
 		catch (Exception exc)
 		{
 			exc.printStackTrace();
 		}
 		finally {  // ALWAYS clean up your DB resources
-			try {
-				if (rs != null)
-					rs.close();
-				if (stmt != null)
-					stmt.close();
-			} catch (Throwable t1) {
-				System.out.println("A problem closing db resources!");
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			}
-			catch (Throwable t2) {
-				System.out.println("Oh-oh! Connection leaked!");
-			}
+			close(rs, stmt, conn);
 		}
 	}
 	
@@ -127,21 +125,7 @@ public class UI {
 			exc.printStackTrace();
 		}
 		finally {  // ALWAYS clean up your DB resources
-			try {
-				if (rs != null)
-					rs.close();
-				if (stmt != null)
-					stmt.close();
-			} catch (Throwable t1) {
-				System.out.println("A problem closing db resources!");
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			}
-			catch (Throwable t2) {
-				System.out.println("Oh-oh! Connection leaked!");
-			}
+			close(rs, stmt, conn);
 		}
 	}
 	
@@ -151,6 +135,42 @@ public class UI {
 	
 	private void viewWarehouseOrders() {
 		
+	}
+	
+	private void close(ResultSet rs, PreparedStatement stmt, Connection conn) {
+		try {
+			if (rs != null)
+				rs.close();
+			if (stmt != null)
+				stmt.close();
+		} catch (Throwable t1) {
+			System.out.println("A problem closing db resources!");
+		}
+		try {
+			if (conn != null)
+				conn.close();
+		}
+		catch (Throwable t2) {
+			System.out.println("Oh-oh! Connection leaked!");
+		}
+	}
+	
+	private void close(ResultSet rs, Statement stmt, Connection conn) {
+		try {
+			if (rs != null)
+				rs.close();
+			if (stmt != null)
+				stmt.close();
+		} catch (Throwable t1) {
+			System.out.println("A problem closing db resources!");
+		}
+		try {
+			if (conn != null)
+				conn.close();
+		}
+		catch (Throwable t2) {
+			System.out.println("Oh-oh! Connection leaked!");
+		}
 	}
 	
 	private class Order {
