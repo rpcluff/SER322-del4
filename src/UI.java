@@ -1,5 +1,11 @@
 import java.sql.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+
+import java.text.SimpleDateFormat;
 
 public class UI {
 	private String url = "";
@@ -42,12 +48,14 @@ public class UI {
 			if (input.equals("1")) {
 				
 			} else if (input.equals("2")) {
-				
+				System.out.print("Enter the email on the order(s): ");
+				String email = in.nextLine();
+				displayOrders(email);
 			}
 		}
 	}
 	
-	private ResultSet processQuery(String statement) {
+	private void displayOrders(String email) {
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		Connection conn = null;
@@ -60,19 +68,12 @@ public class UI {
 			conn = DriverManager.getConnection(url, user, passwd);
 
 			// Step 3: Create a statement
-			stmt = conn.prepareStatement("Select dname, dnumber, mgrssn, mgrstartdate from Department WHERE dname=?");
-			stmt.setString(1, statement);
+			stmt = conn.prepareStatement(Select);
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
-
-			// Step 5: Display the results
-			while (rs.next()) {
-				System.out.print(rs.getString("dname") + "\t");
-				System.out.print(rs.getInt("dnumber") + "\t ");
-				System.out.print(rs.getInt("mgrssn") + "\t ");
-				System.out.println(rs.getDate("mgrstartdate"));
-			}
+			
+			// Step 5: Display
 		}
 		catch (Exception exc)
 		{
@@ -95,7 +96,95 @@ public class UI {
 				System.out.println("Oh-oh! Connection leaked!");
 			}
 		}
+	}
+	
+	private void displayProductName(String productId) {
 		
-		return rs;
+	}
+	
+	private void placeOrder() {
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		Connection conn = null;
+		
+		try {
+			// Step 1: Load the JDBC driver
+			Class.forName(driver);
+
+			// Step 2: make a connection
+			conn = DriverManager.getConnection(url, user, passwd);
+
+			// Step 3: Create a statement
+			stmt = conn.prepareStatement(statement);
+
+			// Step 4: Make a query
+			rs = stmt.executeQuery();
+			
+			// Step 5: Display
+		}
+		catch (Exception exc)
+		{
+			exc.printStackTrace();
+		}
+		finally {  // ALWAYS clean up your DB resources
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+			} catch (Throwable t1) {
+				System.out.println("A problem closing db resources!");
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			}
+			catch (Throwable t2) {
+				System.out.println("Oh-oh! Connection leaked!");
+			}
+		}
+	}
+	
+	private void fulfillOrder() {
+		
+	}
+	
+	private void viewWarehouseOrders() {
+		
+	}
+	
+	private class Order {
+		private int orderId;
+		private String date;
+		private String email;
+		private Map<String, Integer> items;
+		
+		public Order(String email) {
+			this.email = email;
+			items = new HashMap<String, Integer>();
+			Date today = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			date = sdf.format(today);
+		}
+		
+		public void addItem(String productId, int quantity) {
+			items.put(productId, quantity);
+		}
+
+		public int getOrderId() {
+			return orderId;
+		}
+
+		public String getDate() {
+			return date;
+		}
+
+		public String getEmail() {
+			return email;
+		}
+
+		public Map<String, Integer> getItems() {
+			return items;
+		}
 	}
 }
