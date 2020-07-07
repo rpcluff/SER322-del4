@@ -9,9 +9,8 @@ public class UI {
 	private String driver = "";
 	
 	public static void main(String[] args) {
-		if (args.length != 5) {
-			System.out.println("USAGE: java UI <url> <user> <passwd> <driver> <userType>");
-			System.out.println("For <userType>, enter 'e' for employee or 'c' for customer.");
+		if (args.length != 4) {
+			System.out.println("USAGE: java UI <url> <user> <passwd> <driver>");
 			System.exit(0);
 		}
 		
@@ -38,18 +37,12 @@ public class UI {
 	 * Starts the console UI
 	 */
 	private void start() {
-		System.out.println("Query options: ");
-		System.out.println("1: Display the names of all employees who work at Chicago branch and who have" + 
-				" fulfilled at least one order.");
-		System.out.println("2: Display the phone number of the Anaheim location");
-		System.out.println("3: Display the price of all products that are currently in an order and the " + 
-				" the number of that product being purchased is over 2.");
-		System.out.println("4: Display the names of all customers who have an order placed");
-		System.out.println("5: Display names of all products from Seattle that are currently in stock");
-		System.out.println();
 		Scanner in = new Scanner(System.in);
+		printOptions();
 		System.out.print("Enter query option (0 to quit): ");
 		int input = in.nextInt();
+		System.out.println();
+		
 		while (input != 0) {
 			switch (input) {
 			case 1:
@@ -66,16 +59,33 @@ public class UI {
 				break;
 			case 5:
 				query5();
-				break;	
+				break;
 			}
-			System.out.print("Enter query option (q to quit): ");
+			System.out.println();
+			
+			printOptions();
+			System.out.print("Enter query option (0 to quit): ");
 			input = in.nextInt();
+			System.out.println();
 		}
 		in.close();
 	}
 	
+	private void printOptions() {
+		System.out.println("Query options: ");
+		System.out.println("1: Display the names of all employees who work at Chicago branch and who have" + 
+				" fulfilled at least one order.");
+		System.out.println("2: Display the phone number of the Anaheim location");
+		System.out.println("3: Display the price of all products that are currently in an order and the " + 
+				" the number of that product being purchased is over 2.");
+		System.out.println("4: Display the names of all customers who have an order placed");
+		System.out.println("5: Display names of all products from Seattle that are currently in stock");
+		System.out.println();
+	}
+	
 	
 	/**
+	 * Display the results of the query:
 	 * Select the names of all employees who work at Chicago branch and who have fulfilled at least one order.
 	 * 
 	 * SELECT E.Name
@@ -121,6 +131,7 @@ public class UI {
 	}
 	
 	/**
+	 * Display the results of the query:
 	 * Select the phone number of the Anaheim location
 	 * 
 	 * SELECT PhoneNumber
@@ -162,6 +173,7 @@ public class UI {
 	}
 	
 	/**
+	 * Display the results of the query:
 	 * Select the price of all products that are currently in an order and the 
 	 * the number of that product being purchased is over 2. 
 	 * 
@@ -185,15 +197,15 @@ public class UI {
 			// Step 3: Create a statement
 			stmt = conn.prepareStatement("SELECT P.Price " + 
 					"FROM PRODUCT AS P, ORDER_CONTAINS AS OC " + 
-					"WHERE OC.ItemCount > 2 " + 
-					"AND OC.ProductId = P.ProductId");
+					"WHERE OC.ItemCount>2 " + 
+					"AND OC.ProductId=P.ProductId");
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
 			
 			// Step 5: Display
 			while (rs.next()) {
-				
+				System.out.printf("%.2f\n", rs.getFloat("P.Price"));
 			}
 		}
 		catch (Exception exc)
@@ -206,6 +218,7 @@ public class UI {
 	}
 	
 	/**
+	 * Display the results of the query:
 	 * Select names of all customers who have an order placed.
 	 * 
 	 * SELECT C.Name
@@ -247,6 +260,7 @@ public class UI {
 	}
 	
 	/**
+	 * Display the results of the query:
 	 * Select names of all products from Seattle that are currently in stock.
 	 * 
 	 * SELECT P.Name
@@ -268,18 +282,18 @@ public class UI {
 			conn = DriverManager.getConnection(url, user, passwd);
 
 			// Step 3: Create a statement
-			stmt = conn.prepareStatement("SELECT E.Name " + 
-					"FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W " + 
-					"WHERE W.LocationId = 'Chicago'" + 
-					"AND W.eSSN = F.eSSN " + 
-					"AND F.eSSN = E.SSN");
+			stmt = conn.prepareStatement("SELECT P.Name " + 
+					"FROM PRODUCT AS P, STORED_AT AS S " + 
+					"WHERE S.LocationId = 'Seattle' " + 
+					"AND S.ItemCount > 0 " + 
+					"AND S.ProductId = P.ProductId");
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
 			
 			// Step 5: Display
 			while (rs.next()) {
-				System.out.println(rs.getString("E.Name"));
+				System.out.println(rs.getString("P.Name"));
 			}
 		}
 		catch (Exception exc)
