@@ -1,11 +1,6 @@
 import java.sql.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
-
-import java.text.SimpleDateFormat;
 
 public class UI {
 	private String url = "";
@@ -43,17 +38,86 @@ public class UI {
 	 * Starts the UI
 	 */
 	private void start() {
-		System.out.println("Query options: ")
+		System.out.println("Query options: ");
+		System.out.println("1: Display the names of all employees who work at Chicago branch and who have" + 
+				" fulfilled at least one order.");
+		System.out.println("2: Display the phone number of the Anaheim location");
+		System.out.println("3: Display the price of all products that are currently in an order and the " + 
+				" the number of that product being purchased is over 2.");
+		System.out.println("4: Display the names of all customers who have an order placed");
+		System.out.println("5: Display names of all products from Seattle that are currently in stock");
+		System.out.println();
 		Scanner in = new Scanner(System.in);
-		System.out.print("Enter 1 to place new order or 2 to view current order (q to quit): ");
-		String input = in.nextLine();
-		while (!input.equals("q")) {
-			
-			
-			System.out.print("Enter 1 to place new order or 2 to view current order (q to quit): ");
-			input = in.nextLine();
+		System.out.print("Enter query option (0 to quit): ");
+		int input = in.nextInt();
+		while (input != 0) {
+			switch (input) {
+			case 1:
+				query1();
+				break;
+			case 2:
+				query2();
+				break;
+			case 3:
+				query3();
+				break;
+			case 4:
+				query4();
+				break;
+			case 5:
+				query5();
+				break;	
+			}
+			System.out.print("Enter query option (q to quit): ");
+			input = in.nextInt();
 		}
 		in.close();
+	}
+	
+	
+	/**
+	 * Select the names of all employees who work at Chicago branch and who have fulfilled at least one order.
+	 * 
+	 * SELECT E.Name
+	 * FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W
+	 * WHERE W.LocationId = 'Chicago'
+	 * AND W.eSSN = F.eSSN
+	 * AND F.eSSN = E.SSN;
+	 */
+	private void query1() {
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		Connection conn = null;
+		
+		try {
+			// Step 1: Load the JDBC driver
+			Class.forName(driver);
+
+			// Step 2: make a connection
+			conn = DriverManager.getConnection(url, user, passwd);
+
+			// Step 3: Create a statement
+			stmt = conn.prepareStatement("SELECT E.Name " + 
+					"FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W " + 
+					"WHERE W.LocationId = 'Chicago'" + 
+					"AND W.eSSN = F.eSSN " + 
+					"AND F.eSSN = E.SSN");
+
+			// Step 4: Make a query
+			rs = stmt.executeQuery();
+			
+			// Step 5: Display
+			while (rs.next()) {
+				
+			}
+		}
+		catch (Exception exc)
+		{
+			exc.printStackTrace();
+		}
+		finally {  // ALWAYS clean up your DB resources
+			close(rs, stmt, conn);
+		}
 	}
 	
 	/**
@@ -192,73 +256,6 @@ public class UI {
 		}
 		catch (Throwable t2) {
 			System.out.println("Oh-oh! Connection leaked!");
-		}
-	}
-	
-	/**
-	 * Class represent an individual order (intended to be used to add orders to the database)
-	 */
-	private class Order {
-		private int orderId;
-		private String date;
-		private String email;
-		private Map<String, Integer> items;
-		
-		/**
-		 * Constructor for the Order class
-		 * 
-		 * Sets the data member variable to a string representing the current day.
-		 * 
-		 * @param email email of the customer placing the order
-		 */
-		public Order(String email) {
-			this.email = email;
-			items = new HashMap<String, Integer>();
-			Date today = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			date = sdf.format(today);
-		}
-		
-		/**
-		 * Adds a new item to the order
-		 * 
-		 * @param productId productId of the product
-		 * @param quantity quantity of the product
-		 */
-		public void addItem(String productId, int quantity) {
-			items.put(productId, quantity);
-		}
-
-		/**
-		 * Getter for the orderId
-		 * @return orderId
-		 */
-		public int getOrderId() {
-			return orderId;
-		}
-
-		/**
-		 * Getter for the date
-		 * @return the date the order was placed
-		 */
-		public String getDate() {
-			return date;
-		}
-
-		/**
-		 * Getter for the email of the customer
-		 * @return email of the customer
-		 */
-		public String getEmail() {
-			return email;
-		}
-		
-		/**
-		 * Gets the map of items, productId as the key and quantity as the value
-		 * @return the map of items
-		 */
-		public Map<String, Integer> getItems() {
-			return items;
 		}
 	}
 }
