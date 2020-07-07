@@ -35,7 +35,7 @@ public class UI {
 	}
 		
 	/**
-	 * Starts the UI
+	 * Starts the console UI
 	 */
 	private void start() {
 		System.out.println("Query options: ");
@@ -108,6 +108,91 @@ public class UI {
 			
 			// Step 5: Display
 			while (rs.next()) {
+				System.out.println(rs.getString("E.Name"));
+			}
+		}
+		catch (Exception exc)
+		{
+			exc.printStackTrace();
+		}
+		finally {  // ALWAYS clean up your DB resources
+			close(rs, stmt, conn);
+		}
+	}
+	
+	/**
+	 * Select the phone number of the Anaheim location
+	 * 
+	 * SELECT PhoneNumber
+	 * FROM LOCATION 
+	 * WHERE LocationId = 'Anaheim';
+	 */
+	private void query2() {
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		Connection conn = null;
+		
+		try {
+			// Step 1: Load the JDBC driver
+			Class.forName(driver);
+
+			// Step 2: make a connection
+			conn = DriverManager.getConnection(url, user, passwd);
+
+			// Step 3: Create a statement
+			stmt = conn.prepareStatement("SELECT PhoneNumber " + 
+					"FROM LOCATION " + 
+					"WHERE LocationId = 'Anaheim'");
+
+			// Step 4: Make a query
+			rs = stmt.executeQuery();
+			
+			// Step 5: Display
+			while (rs.next()) {
+				System.out.println(rs.getString("PhoneNumber"));
+			}
+		}
+		catch (Exception exc)
+		{
+			exc.printStackTrace();
+		}
+		finally {  // ALWAYS clean up your DB resources
+			close(rs, stmt, conn);
+		}
+	}
+	
+	/**
+	 * Select the price of all products that are currently in an order and the 
+	 * the number of that product being purchased is over 2. 
+	 * 
+	 * SELECT P.Price 
+	 * FROM PRODUCT AS P, ORDER_CONTAINS AS OC
+	 * WHERE OC.ItemCount > 2
+	 * AND OC.ProductId = P.ProductId;
+	 */
+	private void query3() {
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		Connection conn = null;
+		
+		try {
+			// Step 1: Load the JDBC driver
+			Class.forName(driver);
+
+			// Step 2: make a connection
+			conn = DriverManager.getConnection(url, user, passwd);
+
+			// Step 3: Create a statement
+			stmt = conn.prepareStatement("SELECT P.Price " + 
+					"FROM PRODUCT AS P, ORDER_CONTAINS AS OC " + 
+					"WHERE OC.ItemCount > 2 " + 
+					"AND OC.ProductId = P.ProductId");
+
+			// Step 4: Make a query
+			rs = stmt.executeQuery();
+			
+			// Step 5: Display
+			while (rs.next()) {
 				
 			}
 		}
@@ -121,11 +206,13 @@ public class UI {
 	}
 	
 	/**
-	 * Displays the orders of the specified customer
+	 * Select names of all customers who have an order placed.
 	 * 
-	 * @param email email of the customer
+	 * SELECT C.Name
+	 * FROM CUSTOMER AS C, CUSTOMER_ORDER AS O
+	 * WHERE O.CEmail = C.Email;
 	 */
-	private void displayOrders(String email) {
+	private void query4() {
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		Connection conn = null;
@@ -138,22 +225,16 @@ public class UI {
 			conn = DriverManager.getConnection(url, user, passwd);
 
 			// Step 3: Create a statement
-			stmt = conn.prepareStatement("SELECT OC.OrderId, OC.ProductId, P.Name, P.Price, OC.ItemCount "
-					+ "FROM PRODUCT as P, ORDER_CONTAINS as OC, ORDER as O "
-					+ "WHERE O.CEmail=?, OC.OrderId=O.OrderId, OC.ProductId=P.ProductId");
-			stmt.setString(1,  email);
+			stmt = conn.prepareStatement("SELECT C.Name " + 
+					"FROM CUSTOMER AS C, CUSTOMER_ORDER AS O " + 
+					"WHERE O.CEmail = C.Email");
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
 			
 			// Step 5: Display
-			System.out.printf("%-27s %32s %17s %5.2f", "OrderId", "ProductId", "Name", "Price");
 			while (rs.next()) {
-				String orderId = rs.getString("OC.OrderId");
-				String productId = rs.getString("OC.ProductId");
-				String name = rs.getString("P.Name");
-				float price = rs.getFloat("P.Price") * rs.getFloat("OC.ItemCount");
-				System.out.printf("%-27s %32s %17s %5.2f", orderId, productId, name, price);
+				System.out.println(rs.getString("C.Name"));
 			}
 		}
 		catch (Exception exc)
@@ -166,16 +247,18 @@ public class UI {
 	}
 	
 	/**
-	 * Gets the products name of the corresponding productId
+	 * Select names of all products from Seattle that are currently in stock.
 	 * 
-	 * @param productId the id of the product
-	 * @return the name of the product or an empty string if the product does not exist
+	 * SELECT P.Name
+	 * FROM PRODUCT AS P, STORED_AT AS S
+	 * WHERE S.LocationId = 'Seattle' 
+	 * AND S.ItemCount > 0
+	 * AND S.ProductId = P.ProductId;
 	 */
-	private String getProductName(String productId) {
+	private void query5() {
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		Connection conn = null;
-		String name = "";
 		
 		try {
 			// Step 1: Load the JDBC driver
@@ -185,17 +268,18 @@ public class UI {
 			conn = DriverManager.getConnection(url, user, passwd);
 
 			// Step 3: Create a statement
-			stmt = conn.prepareStatement("SELECT Name "
-					+ "FROM PRODUCT as P "
-					+ "WHERE P.ProductId=?");
-			stmt.setString(1,  productId);
+			stmt = conn.prepareStatement("SELECT E.Name " + 
+					"FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W " + 
+					"WHERE W.LocationId = 'Chicago'" + 
+					"AND W.eSSN = F.eSSN " + 
+					"AND F.eSSN = E.SSN");
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
 			
 			// Step 5: Display
-			if (rs.next()) {
-				name = rs.getString("Name");
+			while (rs.next()) {
+				System.out.println(rs.getString("E.Name"));
 			}
 		}
 		catch (Exception exc)
@@ -205,8 +289,6 @@ public class UI {
 		finally {  // ALWAYS clean up your DB resources
 			close(rs, stmt, conn);
 		}
-		
-		return name;
 	}
 	
 	/**
@@ -217,31 +299,6 @@ public class UI {
 	 * @param conn Connection to be closed
 	 */
 	private void close(ResultSet rs, PreparedStatement stmt, Connection conn) {
-		try {
-			if (rs != null)
-				rs.close();
-			if (stmt != null)
-				stmt.close();
-		} catch (Throwable t1) {
-			System.out.println("A problem closing db resources!");
-		}
-		try {
-			if (conn != null)
-				conn.close();
-		}
-		catch (Throwable t2) {
-			System.out.println("Oh-oh! Connection leaked!");
-		}
-	}
-	
-	/**
-	 * Closes the DB resources
-	 * 
-	 * @param rs ResultSet to be closed
-	 * @param stmt Statement to be closed
-	 * @param conn Connection to be closed
-	 */
-	private void close(ResultSet rs, Statement stmt, Connection conn) {
 		try {
 			if (rs != null)
 				rs.close();
