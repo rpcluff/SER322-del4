@@ -2,7 +2,11 @@ import java.sql.*;
 
 import java.util.Scanner;
 
-public class UI {
+/* Deliverable 4
+*  Team 18
+*  Jonah Cole, Ryan Cluff, Dylan Sund
+*/
+public class InventoryUI {
 	private String url = "";
 	private String user = "";
 	private String passwd = "";
@@ -14,7 +18,7 @@ public class UI {
 			System.exit(0);
 		}
 		
-		UI ui = new UI(args[0], args[1], args[2], args[3]);
+		InventoryUI ui = new InventoryUI(args[0], args[1], args[2], args[3]);
 		ui.start();
 	}
 	
@@ -26,7 +30,7 @@ public class UI {
 	 * @param passwd password for accessing the database
 	 * @param driver name of the driver for communicating with the database
 	 */
-	public UI(String url, String user, String passwd, String driver) {
+	public InventoryUI(String url, String user, String passwd, String driver) {
 		this.url = url;
 		this.user = user;
 		this.passwd = passwd;
