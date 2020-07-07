@@ -15,6 +15,8 @@ Video:
 
 Other info:
 	- In the db directory, there are the .sql files from Deliverable 3. An additional .sql file, InventoryDB_Team18_setup.sql, was created as a combination of the create and insert .sql files to simplify the setup of the database.
+	- The update ER diagram is located in the doc directory
 
 Contributions:
 	Java code / ReadMe.txt - Ryan
+	
