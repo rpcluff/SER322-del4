@@ -5,6 +5,9 @@ import java.util.Scanner;
 /* Deliverable 4
 *  Team 18
 *  Jonah Cole, Ryan Cluff, Dylan Sund
+*  
+*  Inventory UI for running queries on the inventory database
+*  To run the application, run java InventoryUI <URL> <USER> <PASSWD> <DRIVER> and follow the console prompts to run queries.
 */
 public class InventoryUI {
 	private String url = "";
