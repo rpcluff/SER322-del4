@@ -80,24 +80,24 @@ public class InventoryUI {
 	
 	private void printOptions() {
 		System.out.println("Query options: ");
-		System.out.println("1: Display the names of all employees who work at Chicago branch and who have" + 
+		System.out.println("1: Display the names of all employees who work at Phoenix branch and who have" + 
 				" fulfilled at least one order.");
-		System.out.println("2: Display the phone number of the Anaheim location");
+		System.out.println("2: Display the phone number of the Flagstaff location");
 		System.out.println("3: Display the price of all products that are currently in an order and the " + 
 				" the number of that product being purchased is over 2.");
 		System.out.println("4: Display the names of all customers who have an order placed");
-		System.out.println("5: Display names of all products from Seattle that are currently in stock");
+		System.out.println("5: Display names of all products from Tempe that are currently in stock");
 		System.out.println();
 	}
 	
 	
 	/**
 	 * Display the results of the query:
-	 * Select the names of all employees who work at Chicago branch and who have fulfilled at least one order.
+	 * Select the names of all employees who work at Phoenix branch and who have fulfilled at least one order.
 	 * 
 	 * SELECT E.Name
 	 * FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W
-	 * WHERE W.LocationId = 'Chicago'
+	 * WHERE W.LocationId = 'Phoenix'
 	 * AND W.eSSN = F.eSSN
 	 * AND F.eSSN = E.SSN;
 	 */
@@ -116,7 +116,7 @@ public class InventoryUI {
 			// Step 3: Create a statement
 			stmt = conn.prepareStatement("SELECT E.Name " + 
 					"FROM EMPLOYEE AS E, FULFILLED_BY AS F, WORKS_AT AS W " + 
-					"WHERE W.LocationId = 'Chicago'" + 
+					"WHERE W.LocationId = 'Phoenix'" + 
 					"AND W.eSSN = F.eSSN " + 
 					"AND F.eSSN = E.SSN");
 
@@ -143,7 +143,7 @@ public class InventoryUI {
 	 * 
 	 * SELECT PhoneNumber
 	 * FROM LOCATION 
-	 * WHERE LocationId = 'Anaheim';
+	 * WHERE LocationId = 'Flagstaff';
 	 */
 	private void query2() {
 		ResultSet rs = null;
@@ -160,7 +160,7 @@ public class InventoryUI {
 			// Step 3: Create a statement
 			stmt = conn.prepareStatement("SELECT PhoneNumber " + 
 					"FROM LOCATION " + 
-					"WHERE LocationId = 'Anaheim'");
+					"WHERE LocationId = 'Flagstaff'");
 
 			// Step 4: Make a query
 			rs = stmt.executeQuery();
@@ -272,7 +272,7 @@ public class InventoryUI {
 	 * 
 	 * SELECT P.Name
 	 * FROM PRODUCT AS P, STORED_AT AS S
-	 * WHERE S.LocationId = 'Seattle' 
+	 * WHERE S.LocationId = 'Tempe' 
 	 * AND S.ItemCount > 0
 	 * AND S.ProductId = P.ProductId;
 	 */
@@ -291,7 +291,7 @@ public class InventoryUI {
 			// Step 3: Create a statement
 			stmt = conn.prepareStatement("SELECT P.Name " + 
 					"FROM PRODUCT AS P, STORED_AT AS S " + 
-					"WHERE S.LocationId = 'Seattle' " + 
+					"WHERE S.LocationId = 'Tempe' " + 
 					"AND S.ItemCount > 0 " + 
 					"AND S.ProductId = P.ProductId");
 
